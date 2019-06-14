@@ -103,6 +103,5 @@ int main(int argc, char *argv[])
     else if (argc == 3)
         ret = dump_section(bin, argv[2]);
 
-    unload_binary(&bin);
     return ret;
 }

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 class Binary;
 class Section;
@@ -32,7 +33,7 @@ public:
     };
 
     Section() : binary(NULL), name(), type(SEC_TYPE_NONE), vma(0), size(0),
-                bytes(NULL) {}
+                bytes() {}
 
     bool contains(uint64_t addr) { return (addr >= vma) && (addr-vma < size); }
 
@@ -41,7 +42,7 @@ public:
     SectionType	type;
     uint64_t	vma;
     uint64_t	size;
-    uint8_t		*bytes;
+    std::unique_ptr<uint8_t[]> bytes;
 };
 
 class Binary {
@@ -74,6 +75,5 @@ public:
 };
 
 int load_binary(std::string &fname, Binary *bin, Binary::BinaryType type);
-void unload_binary(Binary *bin);
 
 #endif /* LOADER_H */

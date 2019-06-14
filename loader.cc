@@ -35,13 +35,9 @@ static int load_sections_bfd(bfd *bfd_h, Binary *bin)
         sec->type = sectype;
         sec->vma = vma;
         sec->size = size;
-        sec->bytes = (uint8_t *) malloc(size);
-        if (!sec->bytes) {
-            fprintf(stderr, "out of memory\n");
-            return -1;
-        }
+        sec->bytes = std::unique_ptr<unsigned char[]>{ new uint8_t[size] };
 
-        if (!bfd_get_section_contents(bfd_h, bfd_sec, sec->bytes, 0, size)) {
+        if (!bfd_get_section_contents(bfd_h, bfd_sec, sec->bytes.get(), 0, size)) {
             fprintf(stderr, "failed to read section '%s' (%s)\n",
                     secname, bfd_errmsg(bfd_get_error()));
             return -1;
@@ -252,15 +248,4 @@ cleanup:
 int load_binary(std::string &fname, Binary *bin, Binary::BinaryType type)
 {
     return load_binary_bfd(fname, bin, type);
-}
-
-void unload_binary(Binary *bin) {
-    size_t i;
-    Section *sec;
-
-    for (i = 0; i < bin->sections.size(); i++) {
-        sec = &bin->sections[i];
-        if (sec->bytes)
-            free(sec->bytes);
-    }
 }
