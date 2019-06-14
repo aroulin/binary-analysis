@@ -6,6 +6,6 @@ set(CMAKE_CXX_STANDARD 11)
 add_definitions(-DPACKAGE)
 add_definitions(-DPACKAGE_VERSION)
 
-add_executable(loader_demo main.cpp loader.h loader.cc)
+add_executable(loader_demo loader_demo.cc loader.h loader.cc)
 
 target_link_libraries(loader_demo bfd)
