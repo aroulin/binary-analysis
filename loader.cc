@@ -34,6 +34,7 @@ static int load_sections_bfd(bfd *bfd_h, Binary *bin)
         sec->name = std::string(secname);
         sec->type = sectype;
         sec->vma = vma;
+        sec->size = size;
         sec->bytes = (uint8_t *) malloc(size);
         if (!sec->bytes) {
             fprintf(stderr, "out of memory\n");
