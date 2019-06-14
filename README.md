@@ -1,2 +1,2 @@
 # binary-analysis
-binary analysis tools
+binary analysis tools - from Practical Binary Analysis book by Denis Andriesse
