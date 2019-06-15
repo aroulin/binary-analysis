@@ -20,9 +20,11 @@ int dump_sections_and_symbols(Binary &bin)
 
         for(i = 0; i < bin.symbols.size(); i++) {
             sym = &bin.symbols[i];
-            printf(" %-40s 0x%016jx %s %s %s\n", sym->name.c_str(), sym->addr,
+            printf(" %-40s 0x%016jx %s %s %s %s\n", sym->name.c_str(), sym->addr,
                    (sym->type & Symbol::SYM_TYPE_FUN) ? "FUNC" : "",
                    (sym->linkType & Symbol::SYM_LINK_DYNAMIC) ? "DYNAMIC" : "STATIC",
+                   (sym->bindType & Symbol::SYM_BIND_GLOBAL) ? "GLOBAL" : (sym->bindType & Symbol::SYM_BIND_LOCAL) ?
+                        "LOCAL" : "UNK",
                    (sym->weak) ? "WEAK" : "");
         }
     }

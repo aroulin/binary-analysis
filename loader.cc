@@ -81,14 +81,24 @@ static int load_symbols_bfd(bfd *bfd_h, Binary *bin, Symbol::SymbolLinkType link
         }
 
         for (i = 0; i < nsyms; i++) {
-            if (bfd_symtab[i]->flags & BSF_FUNCTION) {
+            if (bfd_symtab[i]->flags & BSF_FUNCTION || bfd_symtab[i]->flags & BSF_OBJECT) {
                 bin->symbols.push_back(Symbol());
                 sym = &bin->symbols.back();
-                sym->type = Symbol::SYM_TYPE_FUN;
                 sym->name = std::string(bfd_symtab[i]->name);
                 sym->addr = bfd_asymbol_value(bfd_symtab[i]);
                 sym->linkType = linkType;
-                sym->weak = bfd_sym->flags & BSF_WEAK;
+                sym->weak = bfd_symtab[i]->flags & BSF_WEAK;
+
+                if (bfd_symtab[i]->flags & BSF_FUNCTION) {
+                    sym->type = Symbol::SYM_TYPE_FUN;
+                } else {
+                    sym->type = Symbol::SYM_TYPE_OBJ;
+                }
+
+                if (bfd_symtab[i]->flags & BSF_GLOBAL)
+                    sym->bindType = Symbol::SYM_BIND_GLOBAL;
+                else if (bfd_symtab[i]->flags & BSF_LOCAL)
+                    sym->bindType = Symbol::SYM_BIND_LOCAL;
             }
         }
     }

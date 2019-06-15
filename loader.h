@@ -13,22 +13,31 @@ class Symbol;
 class Symbol {
 public:
     enum SymbolType {
-        SYM_TYPE_UKN = 0,
+        SYM_TYPE_UNK = 0,
         SYM_TYPE_FUN = 1,
+        SYM_TYPE_OBJ = 2,
     };
 
     enum SymbolLinkType {
-        SYM_LINK_STATIC = 0,
-        SYM_LINK_DYNAMIC = 1,
+        SYM_LINK_UNK = 0,
+        SYM_LINK_STATIC = 1,
+        SYM_LINK_DYNAMIC = 2,
     };
 
-    Symbol() : type(SYM_TYPE_UKN), name(), addr(0) {}
+    enum SymbolBindType {
+        SYM_BIND_UNK = 0,
+        SYM_BIND_GLOBAL = 1,
+        SYM_BIND_LOCAL = 2,
+    };
+
+    Symbol() : type(SYM_TYPE_UNK), name(), addr(0), weak(false), linkType(SYM_LINK_UNK), bindType(SYM_BIND_UNK) {}
 
     SymbolType      type;
-    SymbolLinkType  linkType;
     std::string     name;
     uint64_t        addr;
     bool            weak;
+    SymbolLinkType  linkType;
+    SymbolBindType  bindType;
 };
 
 class Section {
