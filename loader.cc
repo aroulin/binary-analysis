@@ -88,6 +88,7 @@ static int load_symbols_bfd(bfd *bfd_h, Binary *bin, Symbol::SymbolLinkType link
                 sym->name = std::string(bfd_symtab[i]->name);
                 sym->addr = bfd_asymbol_value(bfd_symtab[i]);
                 sym->linkType = linkType;
+                sym->weak = bfd_sym->flags & BSF_WEAK;
             }
         }
     }

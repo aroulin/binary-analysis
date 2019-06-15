@@ -28,6 +28,7 @@ public:
     SymbolLinkType  linkType;
     std::string     name;
     uint64_t        addr;
+    bool            weak;
 };
 
 class Section {
