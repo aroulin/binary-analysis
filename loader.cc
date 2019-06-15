@@ -47,13 +47,17 @@ static int load_sections_bfd(bfd *bfd_h, Binary *bin)
     return 0;
 }
 
-static int load_symbols_bfd(bfd *bfd_h, Binary *bin) {
+static int load_symbols_bfd(bfd *bfd_h, Binary *bin, Symbol::SymbolLinkType linkType) {
     int ret;
     long n, nsyms, i;
     asymbol **bfd_symtab = NULL; /* asymbol is struct bfd_symbol */
     Symbol *sym;
 
-    n = bfd_get_symtab_upper_bound(bfd_h);
+    if (linkType == Symbol::SYM_LINK_STATIC)
+        n = bfd_get_symtab_upper_bound(bfd_h);
+    else
+        n = bfd_get_dynamic_symtab_upper_bound(bfd_h);
+
     if (n < 0) {
         fprintf(stderr, "failed to read symtab (%s)\n",
                 bfd_errmsg(bfd_get_error()));
@@ -65,7 +69,11 @@ static int load_symbols_bfd(bfd *bfd_h, Binary *bin) {
             goto fail;
         }
 
-        nsyms = bfd_canonicalize_symtab(bfd_h, bfd_symtab);
+        if (linkType == Symbol::SYM_LINK_STATIC)
+            nsyms = bfd_canonicalize_symtab(bfd_h, bfd_symtab);
+        else
+            nsyms = bfd_canonicalize_dynamic_symtab(bfd_h, bfd_symtab);
+
         if (nsyms < 0) {
             fprintf(stderr, "failed to read symtab (%s)\n",
                     bfd_errmsg(bfd_get_error()));
@@ -79,7 +87,7 @@ static int load_symbols_bfd(bfd *bfd_h, Binary *bin) {
                 sym->type = Symbol::SYM_TYPE_FUN;
                 sym->name = std::string(bfd_symtab[i]->name);
                 sym->addr = bfd_asymbol_value(bfd_symtab[i]);
-                sym->linkType = Symbol::SYM_LINK_STATIC;
+                sym->linkType = linkType;
             }
         }
     }
@@ -90,55 +98,6 @@ static int load_symbols_bfd(bfd *bfd_h, Binary *bin) {
 fail:
     ret = -1;
 cleanup:
-    if (bfd_symtab)
-        free(bfd_symtab);
-
-    return ret;
-}
-
-static int load_dynsym_bfd(bfd *bfd_h, Binary *bin) {
-    int ret;
-    long n, nsyms, i;
-    asymbol **bfd_symtab = NULL; /* asymbol is struct bfd_symbol */
-    Symbol *sym;
-
-    n = bfd_get_dynamic_symtab_upper_bound(bfd_h);
-    if (n < 0) {
-        fprintf(stderr, "failed to read symtab (%s)\n",
-                bfd_errmsg(bfd_get_error()));
-        goto fail;
-    } else if (n) {
-        bfd_symtab = (asymbol **)malloc(n);
-        if (!bfd_symtab) {
-            fprintf(stderr, "out of memory\n");
-            goto fail;
-        }
-
-        nsyms = bfd_canonicalize_dynamic_symtab(bfd_h, bfd_symtab);
-        if (nsyms < 0) {
-            fprintf(stderr, "failed to read symtab (%s)\n",
-                    bfd_errmsg(bfd_get_error()));
-            goto fail;
-        }
-
-        for (i = 0; i < nsyms; i++) {
-            if (bfd_symtab[i]->flags & BSF_FUNCTION) {
-                bin->symbols.push_back(Symbol());
-                sym = &bin->symbols.back();
-                sym->type = Symbol::SYM_TYPE_FUN;
-                sym->name = std::string(bfd_symtab[i]->name);
-                sym->addr = bfd_asymbol_value(bfd_symtab[i]);
-                sym->linkType = Symbol::SYM_LINK_DYNAMIC;
-            }
-        }
-    }
-
-    ret = 0;
-    goto cleanup;
-
-    fail:
-    ret = -1;
-    cleanup:
     if (bfd_symtab)
         free(bfd_symtab);
 
@@ -229,8 +188,8 @@ int load_binary_bfd(std::string &fname, Binary *bin, Binary::BinaryType type)
     }
 
     /* best effort symbol handling */
-    load_symbols_bfd(bfd_h, bin);
-    load_dynsym_bfd(bfd_h, bin);
+    load_symbols_bfd(bfd_h, bin, Symbol::SYM_LINK_STATIC);
+    load_symbols_bfd(bfd_h, bin, Symbol::SYM_LINK_DYNAMIC);
 
     if (load_sections_bfd(bfd_h, bin) < 0)
         goto fail;
