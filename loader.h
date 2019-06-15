@@ -17,11 +17,17 @@ public:
         SYM_TYPE_FUN = 1,
     };
 
+    enum SymbolLinkType {
+        SYM_LINK_STATIC = 0,
+        SYM_LINK_DYNAMIC = 1,
+    };
+
     Symbol() : type(SYM_TYPE_UKN), name(), addr(0) {}
 
-    SymbolType  type;
-    std::string name;
-    uint64_t 	addr;
+    SymbolType      type;
+    SymbolLinkType  linkType;
+    std::string     name;
+    uint64_t        addr;
 };
 
 class Section {

@@ -79,6 +79,7 @@ static int load_symbols_bfd(bfd *bfd_h, Binary *bin) {
                 sym->type = Symbol::SYM_TYPE_FUN;
                 sym->name = std::string(bfd_symtab[i]->name);
                 sym->addr = bfd_asymbol_value(bfd_symtab[i]);
+                sym->linkType = Symbol::SYM_LINK_STATIC;
             }
         }
     }
@@ -127,6 +128,7 @@ static int load_dynsym_bfd(bfd *bfd_h, Binary *bin) {
                 sym->type = Symbol::SYM_TYPE_FUN;
                 sym->name = std::string(bfd_symtab[i]->name);
                 sym->addr = bfd_asymbol_value(bfd_symtab[i]);
+                sym->linkType = Symbol::SYM_LINK_DYNAMIC;
             }
         }
     }
