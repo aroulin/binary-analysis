@@ -11,6 +11,8 @@ target_link_libraries(loader bfd)
 
 add_executable(loader_demo loader_demo.cc)
 add_executable(basic_capstone_linear basic_capstone_linear.cc)
+add_executable(basic_capstone_recursive basic_capstone_recursive.cc)
 
 target_link_libraries(loader_demo loader)
 target_link_libraries(basic_capstone_linear capstone loader)
+target_link_libraries(basic_capstone_recursive capstone loader)
