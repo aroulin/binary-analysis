@@ -8,21 +8,27 @@ int dump_sections_and_symbols(Binary &bin)
     Section *sec;
     Symbol *sym;
     size_t i;
+    printf("%19s %-8s %-20s %s\n",
+            "virtual_address", "size", "name", "type");
 
     for(i = 0; i < bin.sections.size(); i++) {sec = &bin.sections[i];
+
         printf(" 0x%016jx %-8ju %-20s %s\n",
                sec->vma, sec->size, sec->name.c_str(),
                sec->type == Section::SEC_TYPE_CODE ? "CODE" : "DATA");
     }
 
     if(bin.symbols.size() > 0) {
-        printf("scanned symbol tables\n");
+        printf("\n scanned symbol tables: \n");
 
+        printf(" %-42s %16s %-8s %-8s %-8s %-8s\n",
+                "name", "virtual_address", "type", "link", "scope", "weak");
         for(i = 0; i < bin.symbols.size(); i++) {
             sym = &bin.symbols[i];
-            printf(" %-40s 0x%016jx %s %s %s %s\n", sym->name.c_str(), sym->addr,
-                   (sym->type & Symbol::SYM_TYPE_FUN) ? "FUNC" : "",
-                   (sym->linkType & Symbol::SYM_LINK_DYNAMIC) ? "DYNAMIC" : "STATIC",
+            printf(" %-40s 0x%016jx %-8s %-8s %-8s %-8s\n", sym->name.c_str(), sym->addr,
+                   (sym->type & Symbol::SYM_TYPE_FUN) ? "FUNC" : (sym->type && Symbol::SYM_TYPE_OBJ ? "OBJECT" : "UNK"),
+                   (sym->linkType & Symbol::SYM_LINK_DYNAMIC) ? "DYNAMIC" : (sym->type && Symbol::SYM_LINK_STATIC) ?
+                   "LOCAL" : "UNK",
                    (sym->bindType & Symbol::SYM_BIND_GLOBAL) ? "GLOBAL" : (sym->bindType & Symbol::SYM_BIND_LOCAL) ?
                         "LOCAL" : "UNK",
                    (sym->weak) ? "WEAK" : "");
@@ -98,7 +104,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    printf("loaded binary '%s' %s/%s (%u bits) entry@0x%016jx\n",
+    printf("loaded binary '%s'\n%s/%s (%u bits)\nentry@0x%016jx\n\n",
            bin.filename.c_str(), bin.type_str.c_str(), bin.arch_str.c_str(),
            bin.bits, bin.entry);
 
