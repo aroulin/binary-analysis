@@ -53,11 +53,11 @@ public:
 
     bool contains(uint64_t addr) { return (addr >= vma) && (addr-vma < size); }
 
-    Binary 		*binary;
+    Binary      *binary;
     std::string name;
-    SectionType	type;
-    uint64_t	vma;
-    uint64_t	size;
+    SectionType type;
+    uint64_t    vma;
+    uint64_t    size;
     std::unique_ptr<uint8_t[]> bytes;
 };
 
@@ -81,12 +81,12 @@ public:
     std::string             filename;
     BinaryType 	            type;
     std::string             type_str;
-    BinaryArch		        arch;
-    std::string		        arch_str;
-    unsigned		        bits; 	/* bit width e.g., 64 bits*/
-    uint64_t	     	    entry; 	/* entry point */
-    std::vector<Section> 	sections;
-    std::vector<Symbol>  	symbols;
+    BinaryArch              arch;
+    std::string             arch_str;
+    unsigned                bits; 	/* bit width e.g., 64 bits*/
+    uint64_t                entry; 	/* entry point */
+    std::vector<Section>    sections;
+    std::vector<Symbol>     symbols;
 
 };
 
