@@ -94,7 +94,7 @@ int find_gadgets_at_root(Section *text, uint64_t root,
     }
 
     for (uint64_t a = root - 1;
-         a >= root - root_offset && a >= 0;
+         text->contains(a) && a >= root - root_offset;
          a--) {
 
         addr = a;
