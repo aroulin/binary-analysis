@@ -19,7 +19,7 @@ args.add_argument("target_path", help="directory with malware samples")
 args.add_argument("output_file", help="file to write DOT file to")
 args.add_argument("malware_projection", help="file to write DOT file to")
 args.add_argument("resource_projection", help="file to write DOT file to")
-args.add_argument("graph_tool", help="tool to draw graphs to png", default="fdp", nargs='?')
+args.add_argument("graph_tool", help="tool to draw graphs to png (fpd, sfdp, neato)", default="fdp", nargs='?')
 args = args.parse_args()
 
 network = networkx.Graph()
